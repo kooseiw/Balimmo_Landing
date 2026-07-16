@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-primary antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  /* Shared max-width container, matches original .container */
+  .container-x {
+    @apply mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section vertical rhythm, matches original .section--padding */
+  .section-pad {
+    @apply py-14 md:py-20 lg:py-24;
+  }
+
+  .section-title {
+    @apply text-center text-3xl font-bold text-primary sm:text-4xl lg:text-5xl;
+  }
+
+  /* Solid gold call-to-action button (original .solid__btn) */
+  .btn-solid {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-accent-alt;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white;
+  }
+}
+
+/* Dual-thumb range slider: two overlaid native range inputs.
+   The inputs are transparent and stacked; only their thumbs are interactive. */
+.range-thumb {
+  @apply pointer-events-none absolute left-0 top-1/2 m-0 h-6 w-full -translate-y-1/2 appearance-none bg-transparent;
+}
+.range-thumb:focus {
+  @apply outline-none;
+}
+/* WebKit thumb */
+.range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #eba859;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+/* Firefox thumb */
+.range-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #eba859;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.range-thumb::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.range-thumb::-moz-range-track {
+  background: transparent;
+}
