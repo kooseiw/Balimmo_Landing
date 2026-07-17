@@ -3,14 +3,28 @@ import SearchBar from './SearchBar.jsx'
 import { useSearch } from '../context/SearchContext.jsx'
 
 const NAV_LINKS = [
-  { label: 'Villa for sale', href: '#featured' },
-  { label: 'Land for sale', href: '#invest' },
-  { label: 'Contact Us', href: '#contact' },
+  { label: 'Villa for sale', href: '#featured', onClick: null },
+  { label: 'Land for sale', href: '#featured', onClick: 'land' },
+  { label: 'Contact Us', href: '#contact', onClick: null },
 ]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const { docked } = useSearch()
+  const { docked, setTab, land, submitSearch } = useSearch()
+
+  const goToLandListings = (e) => {
+    e.preventDefault()
+    setTab('land')
+    submitSearch({ tab: 'land', land })
+    setOpen(false)
+  }
+
+  const goToVillaListings = (e) => {
+    e.preventDefault()
+    setTab('villa')
+    submitSearch({ tab: 'villa' })
+    setOpen(false)
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 shadow-sm backdrop-blur">
@@ -31,6 +45,7 @@ export default function Navbar() {
               <li key={link.label}>
                 <a
                   href={link.href}
+                  onClick={link.onClick === 'land' ? goToLandListings : link.label === 'Villa for sale' ? goToVillaListings : undefined}
                   className="text-sm font-semibold text-primary transition-colors hover:text-accent"
                 >
                   {link.label}
@@ -77,7 +92,13 @@ export default function Navbar() {
               <li key={link.label}>
                 <a
                   href={link.href}
-                  onClick={() => setOpen(false)}
+                  onClick={
+                    link.onClick === 'land'
+                      ? goToLandListings
+                      : link.label === 'Villa for sale'
+                        ? goToVillaListings
+                        : () => setOpen(false)
+                  }
                   className="block w-full py-3 text-base font-semibold text-primary transition-colors hover:text-accent"
                 >
                   {link.label}
