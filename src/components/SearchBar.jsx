@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import FilterChip from './search/FilterChip.jsx'
+import PriceInputs from './search/PriceInputs.jsx'
 import RangeSlider from './search/RangeSlider.jsx'
 import useClickOutside from '../hooks/useClickOutside.js'
 import { useSearch } from '../context/SearchContext.jsx'
@@ -10,11 +12,11 @@ import {
   MAX_VILLA_BED,
   VILLA_BED_STEP,
   MAX_VILLA_PRICE_USD,
-  VILLA_PRICE_STEP,
   MAX_LAND_SIZE_ARE,
   LAND_SIZE_STEP,
   MAX_LAND_PRICE_IDR,
-  LAND_PRICE_STEP,
+  VILLA_PRICE_PRESETS,
+  LAND_PRICE_PRESETS,
   formatUsd,
   formatIdr,
 } from '../data/searchOptions.js'
@@ -41,7 +43,7 @@ function CheckboxList({ options, selected, onToggle, suffix = '' }) {
 
 export default function SearchBar({ variant = 'hero' }) {
   // Filter state is shared across instances (hero + docked navbar) via context.
-  const { tab, setTab, villa, setVilla, land, setLand } = useSearch()
+  const { tab, setTab, villa, setVilla, land, setLand, submitSearch } = useSearch()
   const [openKey, setOpenKey] = useState(null) // which desktop popover is open (local per instance)
   const [sheetOpen, setSheetOpen] = useState(false)
 
@@ -94,7 +96,7 @@ export default function SearchBar({ variant = 'hero' }) {
       value={state.name}
       onChange={(e) => patch({ name: e.target.value })}
       placeholder={isVilla ? 'Type villa name...' : 'Type land name...'}
-      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
+      className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-primary outline-none placeholder:text-primary/40 focus:border-accent"
     />
   )
 
@@ -121,14 +123,13 @@ export default function SearchBar({ variant = 'hero' }) {
   )
 
   const priceBody = (
-    <RangeSlider
-      min={0}
+    <PriceInputs
+      currency={isVilla ? 'USD' : 'IDR'}
       max={isVilla ? MAX_VILLA_PRICE_USD : MAX_LAND_PRICE_IDR}
-      step={isVilla ? VILLA_PRICE_STEP : LAND_PRICE_STEP}
       valueMin={state.priceMin}
       valueMax={state.priceMax}
       onChange={(a, b) => patch({ priceMin: a, priceMax: b })}
-      format={fmtPrice}
+      presets={isVilla ? VILLA_PRICE_PRESETS : LAND_PRICE_PRESETS}
     />
   )
 
@@ -156,9 +157,11 @@ export default function SearchBar({ variant = 'hero' }) {
   const resetPrice = () =>
     patch({ priceMin: 0, priceMax: isVilla ? MAX_VILLA_PRICE_USD : MAX_LAND_PRICE_IDR })
 
-  // Static clone: submit is a pure no-op (no navigation, no filtering).
   const handleSubmit = (e) => {
     e.preventDefault()
+    setOpenKey(null)
+    setSheetOpen(false)
+    submitSearch()
   }
 
   return (
@@ -249,78 +252,87 @@ export default function SearchBar({ variant = 'hero' }) {
         </form>
       </div>
 
-      {/* ===== Mobile filter sheet ===== */}
-      {sheetOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
-          <div className="absolute inset-0 bg-black/50" />
+      {/* Mobile filter sheet: portaled to document.body so `position: fixed` is not
+          trapped by navbar `backdrop-blur` / hero `overflow-hidden` after scroll. */}
+      {sheetOpen &&
+        createPortal(
           <div
-            ref={sheetRef}
-            className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white shadow-2xl"
+            className="fixed inset-0 z-[100] lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filters"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-              <span className="text-lg font-bold text-primary">Filters</span>
-              <button
-                type="button"
-                onClick={() => setSheetOpen(false)}
-                aria-label="Close filters"
-                className="rounded p-1 text-primary/60 hover:text-primary"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Scrollable body: all groups stacked */}
-            <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5">
-              {/* Tab toggle inside sheet too */}
-              <div className="flex rounded-full bg-gray-100 p-1">
-                {['villa', 'land'].map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTab(t)}
-                    className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold capitalize transition-colors ${
-                      tab === t ? 'bg-primary text-white' : 'text-primary'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+            <button
+              type="button"
+              aria-label="Close filters overlay"
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setSheetOpen(false)}
+            />
+            <div
+              ref={sheetRef}
+              className="absolute inset-y-0 right-0 flex h-dvh max-h-dvh w-full max-w-sm flex-col bg-white shadow-2xl"
+            >
+              <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
+                <span className="text-lg font-bold text-primary">Filters</span>
+                <button
+                  type="button"
+                  onClick={() => setSheetOpen(false)}
+                  aria-label="Close filters"
+                  className="rounded p-1 text-primary/60 hover:text-primary"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
 
-              <div>
-                <p className="mb-2 text-sm font-semibold text-primary">Name</p>
-                {nameBody}
-              </div>
-              <div>
-                <p className="mb-2 text-sm font-semibold text-primary">{isVilla ? 'Bedrooms' : 'Size (are)'}</p>
-                {rangeBody}
-              </div>
-              <div>
-                <p className="mb-2 text-sm font-semibold text-primary">Price ({isVilla ? 'USD' : 'IDR'})</p>
-                {priceBody}
-              </div>
-              <div>
-                <p className="mb-2 text-sm font-semibold text-primary">Area</p>
-                {areaBody}
-              </div>
-              <div>
-                <p className="mb-2 text-sm font-semibold text-primary">Type</p>
-                {ownershipBody}
-              </div>
-            </div>
+              <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-5 py-5">
+                <div className="flex rounded-full bg-gray-100 p-1">
+                  {['villa', 'land'].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTab(t)}
+                      className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold capitalize transition-colors ${
+                        tab === t ? 'bg-primary text-white' : 'text-primary'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
 
-            {/* Footer */}
-            <div className="border-t border-gray-100 px-5 py-4">
-              <button type="button" onClick={() => setSheetOpen(false)} className="btn-solid w-full">
-                {isVilla ? 'Find my villa' : 'Find my land'}
-              </button>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-primary">Name</p>
+                  {nameBody}
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-primary">{isVilla ? 'Bedrooms' : 'Size (are)'}</p>
+                  {rangeBody}
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-primary">Price ({isVilla ? 'USD' : 'IDR'})</p>
+                  {priceBody}
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-primary">Area</p>
+                  {areaBody}
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-primary">Type</p>
+                  {ownershipBody}
+                </div>
+              </div>
+
+              <div className="shrink-0 border-t border-gray-100 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <button type="button" onClick={handleSubmit} className="btn-solid w-full">
+                  {isVilla ? 'Find my villa' : 'Find my land'}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
