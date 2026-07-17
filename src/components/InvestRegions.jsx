@@ -1,3 +1,5 @@
+import { useSearch } from '../context/SearchContext.jsx'
+
 const REGIONS = [
   {
     name: 'Uluwatu',
@@ -20,6 +22,8 @@ const REGIONS = [
 ]
 
 export default function InvestRegions() {
+  const { searchByRegion } = useSearch()
+
   return (
     <section id="invest" className="section-pad">
       <div className="container-x">
@@ -47,9 +51,13 @@ export default function InvestRegions() {
                 </h3>
                 <p className="text-primary">{region.desc}</p>
                 <div>
-                  <a href="#featured" className="btn-solid">
+                  <button
+                    type="button"
+                    onClick={() => searchByRegion(region.name)}
+                    className="btn-solid"
+                  >
                     Discover opportunities
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>

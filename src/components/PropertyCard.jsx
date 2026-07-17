@@ -70,11 +70,20 @@ export default function PropertyCard({ property, currency }) {
         </div>
 
         <ul className="flex justify-between border-t border-gray-100 pt-4">
-          <Stat value={property.bedroom} label="Bedrooms">
-            <BedIcon />
-          </Stat>
-          <Stat value={property.bathroom} label="Bathrooms" />
-          <Stat value={`${property.landSize} m²`} label="Land Size" />
+          {property.type === 'land' ? (
+            <>
+              <Stat value={`${property.sizeAre} are`} label="Plot Size" />
+              <Stat value={`${property.landSize} m²`} label="Land Size" />
+            </>
+          ) : (
+            <>
+              <Stat value={property.bedroom} label="Bedrooms">
+                <BedIcon />
+              </Stat>
+              <Stat value={property.bathroom} label="Bathrooms" />
+              <Stat value={`${property.landSize} m²`} label="Land Size" />
+            </>
+          )}
         </ul>
       </div>
     </article>

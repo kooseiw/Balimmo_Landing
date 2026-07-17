@@ -28,7 +28,7 @@ export default function FeaturedListings() {
           <h2 className="section-title">Our exclusive listings</h2>
           <p className="mt-4 text-primary/80">
             Discover our exclusive properties, available only through Balimmo. These villas and lands
-            represent the finest opportunities in Bali, secured with priority access for our investors.
+            represent the finest opportunities in Bali, secured with priority access for our investors
           </p>
         </div>
 
