@@ -5,6 +5,7 @@
 export const featuredProperties = [
   {
     id: 1,
+    type: 'villa',
     name: 'Villa Uluwatu Cliff',
     slug: 'villa-uluwatu-cliff',
     area: 'Uluwatu',
@@ -20,6 +21,7 @@ export const featuredProperties = [
   },
   {
     id: 2,
+    type: 'villa',
     name: 'Canggu Garden Villa',
     slug: 'canggu-garden-villa',
     area: 'Canggu',
@@ -35,6 +37,7 @@ export const featuredProperties = [
   },
   {
     id: 3,
+    type: 'villa',
     name: 'Ubud Jungle Retreat',
     slug: 'ubud-jungle-retreat',
     area: 'Ubud',
@@ -50,6 +53,7 @@ export const featuredProperties = [
   },
   {
     id: 4,
+    type: 'villa',
     name: 'Sanur Beachside Villa',
     slug: 'sanur-beachside-villa',
     area: 'Sanur',
@@ -65,6 +69,7 @@ export const featuredProperties = [
   },
   {
     id: 5,
+    type: 'villa',
     name: 'Pererenan Modern Villa',
     slug: 'pererenan-modern-villa',
     area: 'Canggu',
@@ -80,6 +85,7 @@ export const featuredProperties = [
   },
   {
     id: 6,
+    type: 'villa',
     name: 'Bingin Ocean View',
     slug: 'bingin-ocean-view',
     area: 'Uluwatu',
@@ -92,5 +98,39 @@ export const featuredProperties = [
     leaseYearsLeft: 28,
     image: '/landing/assets/img/other/best-selling-thumb3.png',
     exclusive: true,
+  },
+  {
+    id: 7,
+    type: 'land',
+    name: 'Uluwatu Oceanfront Plot',
+    slug: 'uluwatu-oceanfront-plot',
+    area: 'Uluwatu',
+    sizeAre: 35,
+    priceIdr: 12_000_000_000,
+    priceUsd: 750_000,
+    bedroom: null,
+    bathroom: null,
+    landSize: 3500,
+    legalStatus: 'Freehold',
+    leaseYearsLeft: null,
+    image: '/landing/assets/img/other/best-selling-thumb3.png',
+    exclusive: true,
+  },
+  {
+    id: 8,
+    type: 'land',
+    name: 'Canggu Rice Field Land',
+    slug: 'canggu-rice-field-land',
+    area: 'Canggu',
+    sizeAre: 18,
+    priceIdr: 4_500_000_000,
+    priceUsd: 280_000,
+    bedroom: null,
+    bathroom: null,
+    landSize: 1800,
+    legalStatus: 'New Leasehold',
+    leaseYearsLeft: 28,
+    image: '/landing/assets/img/other/best-selling-thumb2.png',
+    exclusive: false,
   },
 ]
