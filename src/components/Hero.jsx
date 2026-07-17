@@ -5,7 +5,7 @@ export default function Hero() {
   const { setSentinel } = useSearch()
 
   return (
-    <section id="top" className="relative flex min-h-[85vh] items-center overflow-hidden">
+    <section id="top" className="relative flex min-h-[85vh] items-center overflow-x-hidden">
       {/* Background video */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
